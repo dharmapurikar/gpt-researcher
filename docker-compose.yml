@@ -3,10 +3,19 @@ services:
     pull_policy: build
     image: gptresearcher/gpt-researcher
     build: ./
-    environment: 
+    volumes:
+      - .:/usr/src/app
+    environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       TAVILY_API_KEY: ${TAVILY_API_KEY}
       LANGCHAIN_API_KEY: ${LANGCHAIN_API_KEY}
+      LLM_PROVIDER: ${LLM_PROVIDER}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL}
+      FAST_LLM_MODEL: ${FAST_LLM_MODEL}
+      SMART_LLM_MODEL: ${SMART_LLM_MODEL}
+      TEMPERATURE: ${TEMPERATURE}
+      EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER}
+      OLLAMA_EMBEDDING_MODEL: ${OLLAMA_EMBEDDING_MODEL}
     restart: always
     ports:
       - 8000:8000
@@ -29,14 +38,10 @@ services:
   gpt-researcher-tests:
     image: gptresearcher/gpt-researcher-tests
     build: ./
-    environment: 
+    environment:
       OPENAI_API_KEY: ${OPENAI_API_KEY}
       TAVILY_API_KEY: ${TAVILY_API_KEY}
       LANGCHAIN_API_KEY: ${LANGCHAIN_API_KEY}
-    profiles: ["test"]
+    profiles: [ "test" ]
     command: >
-      /bin/sh -c "
-      pip install pytest pytest-asyncio faiss-cpu &&
-      python -m pytest tests/report-types.py &&
-      python -m pytest tests/vector-store.py
-      "
+      /bin/sh -c " pip install pytest pytest-asyncio faiss-cpu && python -m pytest tests/report-types.py && python -m pytest tests/vector-store.py "
